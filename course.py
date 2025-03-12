@@ -7,24 +7,24 @@ import random
 
 #initialise board
 from pygame.locals import *
-pygame.init()
-pygame.display.set_caption("Tactical Battleships")
-screen = pygame.display.set_mode((800,600),0,32)
-square_size = 30
-h_margin = square_size * 4
-v_margin = square_size * 4
-brown = (222,184,135)
-def get_font(font,size):
-    return pygame.font.Font(font,size)
-def get_background(background): # Returns the desired background
-    return pygame.image.load(background)
+pygame.init()# initialising the python modules
+pygame.display.set_caption("Tactical Battleships")#Changes the window title to "Tactical Battleships"
+screen = pygame.display.set_mode((800,600),0,0) #creates a display surface with the dimensions 800 by 600
+square_size = 30 #The size of each cell in the board
+h_margin = square_size * 4 # the horizontal borders of the game table
+v_margin = square_size * 4 # vertical borders of the game table
+brown = (222,184,135) #Hexadecimal for the brown colour
+def get_font(font,size):#function that takes allows me to set the font without longer lines of code
+    return pygame.font.Font(font,size)# sets font
+def get_background(background): #function that sets the background of a rect or screen without longer lines of code
+    return pygame.image.load(background)# sets background
 
 class Button():
-    def __init__(self,image,pos, button_text, font, base_colour, over_colour):
+    def __init__(self,image,pos, button_text, font, base_colour, over_colour):#constructor that initialises parameters that are the characteristics of the button
         self.image = image
         self.font = font
-        self.base_colour = base_colour
-        self.over_colour = over_colour
+        self.base_colour = base_colour #normal colour of button text
+        self.over_colour = over_colour # colour of text when hovered over
         self.x_pos = pos[0]
         self.y_pos = pos[1]
         self.button_text = button_text
@@ -32,233 +32,147 @@ class Button():
         self.image_rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
         self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
-    def update(self, screen):
+    def update(self, screen):# function checks if an image is taken in or not
         if self.image is None:
             self.image = self.text
-            screen.blit(self.text,self.text_rect)
+            screen.blit(self.text,self.text_rect) # displays text if there is not image
         elif self.image is not None:
-            screen.blit(self.image,self.image_rect)
-            screen.blit(self.text,self.text_rect)
-    def checkForInput(self, position):
-        if position[0] in range(self.image_rect.left, self.image_rect.right) and position[1] in range(self.image_rect.top, self.image_rect.bottom):
+            screen.blit(self.image,self.image_rect) #displays image onto button
+            screen.blit(self.text,self.text_rect) # displays text onto button
+    def checkForInput(self, position):#checks if mouse has hovered over text
+        if position[0] in range(self.image_rect.left, self.image_rect.right) and position[1] in range(self.image_rect.top, self.image_rect.bottom):#checks if mouse position is within button position
             return True
         else:
             return False
     def hoverchange(self, position):
-        if position[0] in range(self.image_rect.left, self.image_rect.right) and position[1] in range(self.image_rect.top, self.image_rect.bottom):
-            self.text = self.font.render(self.button_text, True, self.over_colour)
+        if self.checkForInput(position):#Calls previous function to check if mouse position in withing button position
+            self.text = self.font.render(self.button_text, True, self.over_colour)#Changes text colour
         else:
-            self.text = self.font.render(self.button_text, True, self.base_colour)
-class level_of_difficulty():
-    def __init__(self,back_button, easy_button, regular_button, difficult_button):
-        self.back_button = back_button
-        self.easy_button = easy_button
-        self.regular_button = regular_button
-        self.difficult_button = difficult_button
+            self.text = self.font.render(self.button_text, True, self.base_colour)#text colour stays the same
+class level_of_difficulty():#display loop for level of difficulty screen
+    def __init__(self):
+        self.back_button = Button(pygame.transform.scale(get_background("button.png"),(70,50)),(35,20),"Exit",get_font("prstart.ttf",15),(240, 255, 255), "red") # object of button that allows you to exit to main menu
+        self.easy_button = Button(pygame.transform.scale(get_background("easy.png"),(250,50)),(400,200),"easy",get_font("prstart.ttf",25),(240, 255, 255), "red")# Object that will move to play screen
+        self.regular_button = Button(pygame.transform.scale(get_background("regular.png"),(250,50)),(400,300),"regular",get_font("prstart.ttf",25),(240, 255, 255), "red")# Object that will move to play screen
+        self.difficult_button = Button(pygame.transform.scale(get_background("difficult.png"),(250,50)),(400,400),"difficult)",get_font("prstart.ttf",25),(240, 255, 255), "red")# Object that will move to play screen
 
     def screen(self):
         while True:
-            screen.fill((240, 255, 255))
-            difficult_mousepos = pygame.mouse.get_pos()
+            screen.fill((240, 255, 255))#sets the colour of the display to light blue
+            difficult_mousepos = pygame.mouse.get_pos() #return both y and x coordinated of your mouse cursor
 
-            difficulty_title = get_font("prstart.ttf", 25).render("Choose your difficulty!", True,(0, 0, 0) )
-            title_rect = difficulty_title.get_rect(center =(400,100))
+            difficulty_title = get_font("prstart.ttf", 25).render("Choose your difficulty!", True,(0, 0, 0) )#text with desired font
+            title_rect = difficulty_title.get_rect(center =(400,100))#creates a rectangle for the text
 
-            screen.blit(difficulty_title,title_rect)
-            for button in [self.back_button,self.regular_button,self.easy_button,self.difficult_button]:
-                button.hoverchange(difficult_mousepos)
-                button.update(screen)
+            screen.blit(difficulty_title,title_rect) # displays the text onto the screen
+            for button in [self.back_button,self.regular_button,self.easy_button,self.difficult_button]:#loops through button objects
+                button.hoverchange(difficult_mousepos)#allows text inside button to change colour when you hover
+                button.update(screen)#checks for image and text
 
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                    sys.exit() # allows the game to stop running without any problems
+                if event.type == pygame.MOUSEBUTTONDOWN:#checks for when you hold down on your mouse
                     if self.back_button.checkForInput(difficult_mousepos):
-                        start.menuscreen()
+                        start.menuscreen()#runs main menu screen when back button clicked
                     elif self.easy_button.checkForInput(difficult_mousepos):
-                        play.playscreen()
+                        play.playscreen()#runs game screen when easy button clicked
                     elif self.regular_button.checkForInput(difficult_mousepos):
                         pass
                     elif self.difficult_button.checkForInput(difficult_mousepos):
                         pass
-            pygame.display.update()
-easy_button = Button(pygame.transform.scale(get_background("easy.png"),(250,50)),(400,200),"easy",get_font("prstart.ttf",25),(240, 255, 255), "red")
-regular_button = Button(pygame.transform.scale(get_background("regular.png"),(250,50)),(400,300),"regular",get_font("prstart.ttf",25),(240, 255, 255), "red")
-difficult_button = Button(pygame.transform.scale(get_background("difficult.png"),(250,50)),(400,400),"difficult)",get_font("prstart.ttf",25),(240, 255, 255), "red")
-exit_play_button = Button(pygame.transform.scale(get_background("button.png"),(70,50)),(35,20),"Exit",get_font("prstart.ttf",15),(240, 255, 255), "red")
-difficulty = level_of_difficulty(exit_play_button,easy_button,regular_button,difficult_button)
+            pygame.display.update()#allows display to refresh
+
+difficulty = level_of_difficulty()#create object of level of difficulty class
 
 
 class Play_easy():
-    def __init__(self,back_button):
-        self.back_button = back_button
+    def __init__(self):
+        self.back_button = Button(pygame.transform.scale(get_background("button.png"),(70,50)),(35,20),"Exit",get_font("prstart.ttf",15),(240, 255, 255), "red")#button object that allows you to go back from game screen
 
-    def draw_grid(self):
-        pos = 0
-        while pos < 100:
-            x = h_margin + pos % 10 * square_size
-            y = v_margin + pos // 10 * square_size
-            square = pygame.Rect( x, y, square_size, square_size)
-            pygame.draw.rect(screen,brown, square, width = 3)
-            pos += 1
+    
 
 
     def playscreen(self):
         while True:
-            screen.blit(pygame.transform.scale(get_background("playbackground.png"),(800,600)),(0,0))
-            self.draw_grid()
+            screen.blit(pygame.transform.scale(get_background("playbackground.png"),(800,600)),(0,0))#sets background to the display
+            #self.draw_grid()
 
-            play_mouse_pos = pygame.mouse.get_pos()
-            self.back_button.hoverchange(play_mouse_pos)
-            self.back_button.update(screen)
+            play_mouse_pos = pygame.mouse.get_pos()#holds x, y coordinates of mouse cursor
+            self.back_button.hoverchange(play_mouse_pos)# changes colour of button text when hovered on
+            self.back_button.update(screen)#checks whether button has image or not
 
 
-            for event in pygame.event.get():
+            for event in pygame.event.get():#goes through every event in pygame
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.back_button.checkForInput(play_mouse_pos):
-                        start.menuscreen()
-            pygame.display.update()
+                    sys.exit()# allows the game to stop running without any problems
+                if event.type == pygame.MOUSEBUTTONDOWN:#checks for when you hold down on your mouse
+                    if self.back_button.checkForInput(play_mouse_pos):#if mouse cursor is on button
+                        start.menuscreen()#runs main menu screen if back button clicked
+            pygame.display.update()#allows display to refresh
 
-play = Play_easy(exit_play_button)
-class settings():
-    def __init__(self,back_button):
-        self.back_button = back_button
+play = Play_easy()#creates object of play class
+class settings():#class for settings screen
+    def __init__(self):
+        self.back_button = Button(pygame.transform.scale(get_background("button.png"),(70,50)),(35,20),"Exit",get_font("prstart.ttf",15),(240, 255, 255), "red")#button object that allows you to go back from game screen
 
     def settingscreen(self):
         while True:
-            screen.fill((167, 199, 231))
+            screen.fill((167, 199, 231))#sets colour of the screen to light blue
 
-            setting_mouse_pos = pygame.mouse.get_pos()
-            self.back_button.hoverchange(setting_mouse_pos)
-            self.back_button.update(screen)
+            setting_mouse_pos = pygame.mouse.get_pos()#return both y and x coordinated of your mouse cursor
+            self.back_button.hoverchange(setting_mouse_pos)# changes colour of button text when hovered on
+            self.back_button.update(screen)#checks whether button has image or not
 
 
-            for event in pygame.event.get():
+            for event in pygame.event.get():#goes through every event in pygame
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()
+                    sys.exit()# allows the game to stop running without any problems
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.back_button.checkForInput(setting_mouse_pos):
-                        start.menuscreen()
-            pygame.display.update()
-setting = settings(exit_play_button)
+                    if self.back_button.checkForInput(setting_mouse_pos):#if mouse cursor is on button
+                        start.menuscreen()#runs main menu screen if back button clicked
+            pygame.display.update()#allows display to refresh
+
+setting = settings()#creates object of settings class
 
 class Mainmenu():
-    def __init__(self, play_button,setting_button,leaderboard_button):
-        self.play_buttons = play_button
-        self.setting_button = setting_button
-        self.leaderboard_button = leaderboard_button
+    def __init__(self):
+        self.play_buttons = Button(get_background("button.png"),(400,250),"Play",get_font("prstart.ttf",25),(240, 255, 255), "red")#object of button class that allows you to move to choose difficulty screen
+
+        self.setting_button = Button(get_background("button.png"), (400, 350), "Settings", get_font("prstart.ttf",25), (240, 255, 255), "red")#object of button class that move you to settings screen
+        self.leaderboard_button = Button(get_background("button.png"), (400, 450), "Leaderboard",get_font("prstart.ttf",25), (240, 255, 255), "red")#object of button class that move you to the leaderboard screen
     def menuscreen(self):
-        pygame.display.set_caption("menu")
-        while True:
-            screen.blit(get_background("background.png"),(0,0) )
+        pygame.display.set_caption("menu")#sets caption of the window to menu
+        while True:#will always run
+            screen.blit(get_background("background.png"),(0,0) )#sets the background of screen to picture
 
-            MOUSEPOS = pygame.mouse.get_pos()
+            MOUSEPOS = pygame.mouse.get_pos()#return both y and x coordinated of your mouse cursor
 
-            menu_title = get_font("prstart.ttf",30).render("Tactical Battleships", True, (240, 255, 255))
-            menu_rect = menu_title.get_rect(center=(400,50))
+            menu_title = get_font("prstart.ttf",30).render("Tactical Battleships", True, (240, 255, 255))#Sets the font of the text and colour
+            menu_rect = menu_title.get_rect(center=(400,50))#creates a rect to put the text into with specified size
 
-            screen.blit(menu_title,menu_rect)
+            screen.blit(menu_title,menu_rect)#displays rect with text onto screen
 
-            for button in [self.play_buttons,self.setting_button,self.leaderboard_button,]:
-                button.hoverchange(MOUSEPOS)
-                button.update(screen)
+            for button in [self.play_buttons,self.setting_button,self.leaderboard_button,]:#loops through button objects
+                button.hoverchange(MOUSEPOS)#allows all object to change colour when hovered on
+                button.update(screen)#check if all object have images and displays button onto screen
 
-            for event in pygame.event.get():
+            for event in pygame.event.get():#goes through every event in pygame
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.play_buttons.checkForInput(MOUSEPOS):
-                        difficulty.screen()
-                    elif self.setting_button.checkForInput(MOUSEPOS):
-                        setting.settingscreen()
-                    elif self.leaderboard_button.checkForInput(MOUSEPOS):
+                    sys.exit()# allows the game to stop running without any problems
+                if event.type == pygame.MOUSEBUTTONDOWN:#checks for when you hold down on your mouse
+                    if self.play_buttons.checkForInput(MOUSEPOS):#if mouse position is on play button
+                        difficulty.screen()#show difficulty screen
+                    elif self.setting_button.checkForInput(MOUSEPOS):#if mouse position is on settings button
+                        setting.settingscreen()#show settings screen
+                    elif self.leaderboard_button.checkForInput(MOUSEPOS):#if mouse position is on leaderboard button
                         pass
-            pygame.display.update()
-playbuttons = Button(get_background("button.png"),(400,250),"Play",get_font("prstart.ttf",25),(240, 255, 255), "red")
-settingbutton = Button(get_background("button.png"), (400, 350), "Settings", get_font("prstart.ttf",25), (240, 255, 255), "red")
-leaderboardbutton = Button(get_background("button.png"), (400, 450), "Leaderboard",get_font("prstart.ttf",25), (240, 255, 255), "red")
-class Ship():
-    def __init__(self,size_of_ship):
-        self.row = random.randrange(0,9)
-        self.col = random.randrange(0, 9)
-        self.size = size_of_ship
-        self.orientation = random.choice(["h","v"])
-        self.indexes = self.compute_indexes()
+            pygame.display.update()#allows display to refresh
 
-    def compute_indexes(self):
-        start_index = self.row * 10 + self.col
-        if self.orientation == "h":
-            return  [start_index + i for i in range(self.size)]
-        elif self.orientation == "v":
-            return [start_index + i * 10 for i in range(self.size)]
-
-
-class Player():
-    def __init__(self):
-        self.ships = []
-        self.search = ["U" for i in range(100)]
-        self.sizes = [2,3,3,4,5]
-        self.place_ships(self.sizes)
-        listoflist = [ship.indexes for ship in self.ships]
-        self.indexes = [index for sublist in listoflist for index in sublist]
-
-
-    def place_ships(self,sizes):
-        for size in sizes:
-            placed = False
-            while not placed:
-                ship = Ship(size)
-
-                possible_placement = True
-
-                for i in ship.indexes:
-                    if i >=100 :
-                        possible_placement = False
-
-                    new_row = i // 10
-                    new_col = i % 10
-
-                    if new_col != ship.col and new_row != ship.row:
-                        possible_placement = False
-
-                    for different_ship in self.ships:
-                        if i in different_ship.indexes():
-                            possible_placement = False
-                if possible_placement == True:
-                    self.ships.append(ship)
-                    placed = True
-class Game():
-    def __init__(self):
-        self.player1 = Player()
-        self.player2 = Player()
-        self.player1_turn = True
-        self.over = False
-
-    def make_move(self, i):
-        if self.player1_turn == True:
-            player = self.player1
-            opponent = self.player2
-        else:
-            player = self.player2
-            opponent = self.player1
-
-        if i in opponent.indexes():
-            Player.search[i] = "H"
-
-            for ship in opponent.ships:
-                sunk = True
-                for i in ship.indexes:
-                    if player.search[i] == "U":
-                        sunk = False
-        else:
-            player.search[i] = "M"
-
-start = Mainmenu(playbuttons,settingbutton,leaderboardbutton)
-start.menuscreen()
+start = Mainmenu()#creates object of main menu
+start.menuscreen()#calls menu screen function of start object which creates a display
