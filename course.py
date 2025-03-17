@@ -1,3 +1,4 @@
+#coding cassowary
 #import modules
 import pygame
 import sys
